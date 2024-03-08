@@ -1,11 +1,18 @@
 [package]
-name = "calculator-wasm-rust-pwa"
+name = "app"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-eframe = { version = "0.21.3", default-features = false, features = ["default_fonts", "glow", "persistence"] }
-egui = "0.15"
+eframe = "0.26.2"
+egui = "0.26.2"
 emath = "0.26.2"
+image = "0.24.7"
+egui-file-dialog = "0.3.1"
+clap = { version = "4.4.11", features = ["derive"] }
+kurbo = "0.10.4"
+
+
+# pixel = "0.1.0"

@@ -1,51 +1,51 @@
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")] // hide console window on Windows in release
-use eframe::egui;  
-use crate::egui::*;
-  
-struct CalcApp {}  
-  
-impl CalcApp {  
-    fn new(_cc: &eframe::CreationContext<'_>) -> Self {  
-        CalcApp {}  
-    }  
-}  
-  
-impl eframe::App for CalcApp {  
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+use std::path::PathBuf;
+use app::pixelation::*;
+use eframe::egui;
+use egui_file_dialog::FileDialog;
 
-    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {         
-            // Отображение контейнера с пунктирной границей:
-            egui::CentralPanel::default().show(ctx, |ui| {
-                // Создайте контейнер с пунктирной границей:
-                let container = egui::containers::Frame::none()
-                .fill(egui::Color32::TRANSPARENT) // Прозрачная заливка
-                .stroke(egui::Stroke::new(1.0, Color32::BLACK)) // Пунктирная граница
-                .outer_margin(egui::vec2(10.0, 20.0))
-                .inner_margin(egui::vec2(10.0,20.0));
-                
-    
-                // Добавьте виджеты внутри контейнера:
-                container.show(ui, |ui| {
-                    ui.label("This is a label");
-                    ui.hyperlink("https://github.com/emilk/egui");
-                    ui.label("Это контейнер с пунктирной границей");
-                    // Добавьте другие виджеты по вашему выбору...
-                });
-            });
-    }
-     
+#[derive(Default)]
+struct MyApp {
+    file_dialog: FileDialog,
+    selected_file: Option<PathBuf>,
 }
 
-fn main() -> eframe::Result<()>  {  
+impl MyApp {
+    pub fn new(_cc: &eframe::CreationContext) -> Self {
+        Self {
+            // Create a new file dialog object
+            file_dialog: FileDialog::new(),
+            selected_file: None,
+        }
+    }
+}
 
-    let native_options = eframe::NativeOptions {
-        initial_window_size: Some(vec2(820.0, 740.0)), 
-        ..Default::default()
-    };
+impl eframe::App for MyApp {
+    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        egui::CentralPanel::default().show(ctx, |ui| {
+            if ui.button("Select file").clicked() {
+                // Open the file dialog to select a file.
+                self.file_dialog.select_file();
+            }
 
-    eframe::run_native(  
-        "Pixelation",  
-        eframe::NativeOptions::default(),  
-        Box::new(|cc| Box::new(CalcApp::new(cc))),  
-    )  
-    
-}  
+            ui.label(format!("Selected file: {:?}", self.selected_file
+            ));
+           
+            // Update the dialog and check if the user selected a file
+            if let Some(path) = self.file_dialog.update(ctx).selected() {
+                    self.selected_file = Some(path.to_path_buf());
+               
+                    
+            }
+           ui.image("1.png");
+        });
+    }
+}
+
+fn main() -> eframe::Result<()> {
+    eframe::run_native(
+        "Pixelation",
+        eframe::NativeOptions::default(),
+        Box::new(|ctx| Box::new(MyApp::new(ctx))),
+    )
+}
